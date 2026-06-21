@@ -123,7 +123,14 @@ const refreshProject = async (id) => {
   refreshingId.value = id
   try {
     await api.post(`/projects/${id}/refresh`)
-    ElMessage.success('刷新成功')
+    ElMessage.success('代码已刷新')
+    try {
+      await api.post(`/projects/${id}/cases/collect`)
+      ElMessage.info('用例已重新收集')
+    } catch (e) {
+      ElMessage.warning('代码已刷新，但重新收集用例失败: ' + e.message)
+    }
+    loadProjects()
   } catch (e) {
     ElMessage.error(e.message)
   } finally {

@@ -27,7 +27,14 @@ def _clone(git_url: str, clone_dir: str):
 
 def _pull(clone_dir: str):
     subprocess.run(
-        ["git", "-C", clone_dir, "pull"],
+        ["git", "-C", clone_dir, "fetch", "origin"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    subprocess.run(
+        ["git", "-C", clone_dir, "reset", "--hard", "FETCH_HEAD"],
         check=True,
         capture_output=True,
         text=True,
