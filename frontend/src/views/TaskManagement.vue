@@ -2,9 +2,14 @@
   <div class="task-mgmt">
     <div class="panel-header">
       <span>测试任务</span>
-      <el-button size="small" type="primary" @click="showCreate = true">
-        <el-icon><Plus /></el-icon>创建任务
-      </el-button>
+      <div>
+        <el-button size="small" @click="loadTasks" :loading="loading">
+          <el-icon><Refresh /></el-icon>刷新
+        </el-button>
+        <el-button size="small" type="primary" @click="showCreate = true">
+          <el-icon><Plus /></el-icon>创建任务
+        </el-button>
+      </div>
     </div>
 
     <el-table :data="tasks" stripe v-loading="loading" empty-text="暂无任务" size="small" style="flex:1">

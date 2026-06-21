@@ -43,9 +43,16 @@ const activeMenu = computed(() => {
   padding: 0;
   box-sizing: border-box;
 }
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #f5f7fa;
+}
+#app-layout, #app-layout > .el-container {
+  height: 100vh;
 }
 .app-header {
   background: #409eff;
@@ -53,6 +60,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
+  flex-shrink: 0;
 }
 .header-left {
   display: flex;
@@ -76,7 +84,8 @@ body {
   border-bottom-color: #fff !important;
 }
 .app-main {
-  min-height: calc(100vh - 60px);
+  height: calc(100vh - 60px);
   padding: 20px;
+  overflow: hidden;
 }
 </style>

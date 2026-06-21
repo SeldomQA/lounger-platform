@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..database import get_db
-from ..models import Project, TestReport, ReportDetail
+from ..models import Project, TestReport, ReportDetail, TaskRun
 from ..schemas import ReportResponse, ReportDetailResponse
 
 router = APIRouter(prefix="/api/projects/{project_id}/reports", tags=["测试报告"])
@@ -33,3 +33,20 @@ async def get_report(project_id: int, report_id: int, db: AsyncSession = Depends
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
     return ReportResponse.model_validate(report)
+
+
+@router.delete("/{report_id}")
+async def delete_report(project_id: int, report_id: int, db: AsyncSession = Depends(get_db)):
+    report = await db.get(TestReport, report_id)
+    if not report or report.project_id != project_id:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    result = await db.execute(
+        select(TaskRun).where(TaskRun.report_id == report_id)
+    )
+    for task_run in result.scalars().all():
+        task_run.report_id = None
+
+    await db.delete(report)
+    await db.commit()
+    return {"message": "Report deleted"}

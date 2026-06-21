@@ -93,9 +93,14 @@
           <el-table-column label="运行时间" min-width="145">
             <template #default="{ row }">{{ formatTime(row.created_at) }}</template>
           </el-table-column>
-          <el-table-column label="操作" width="60" fixed="right">
+          <el-table-column label="操作" width="120" fixed="right">
             <template #default="{ row }">
               <el-button v-if="row.report_id" size="small" type="primary" link @click="showTaskRunDetail(row)">详情</el-button>
+              <el-popconfirm v-if="row.report_id" title="确定删除此报告？" @confirm="deleteReport(row.report_id)">
+                <template #reference>
+                  <el-button size="small" type="danger" link>删除</el-button>
+                </template>
+              </el-popconfirm>
               <span v-else class="never-run">-</span>
             </template>
           </el-table-column>
@@ -384,6 +389,16 @@ const showTaskRunDetail = async (run) => {
 const showCaseDetail = (item) => {
   caseDetail.value = item
   caseDetailVisible.value = true
+}
+
+const deleteReport = async (reportId) => {
+  try {
+    await api.delete(`/projects/${projectId.value}/reports/${reportId}`)
+    ElMessage.success('报告已删除')
+    await loadTaskRuns()
+  } catch (e) {
+    ElMessage.error(e.message)
+  }
 }
 
 const toggleCase = (nodeid) => {
