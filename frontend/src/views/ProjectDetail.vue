@@ -48,7 +48,7 @@
           <span>任务报告</span>
         </div>
         <div class="filter-bar">
-          <el-select v-model="runFilterTaskName" placeholder="任务名称" size="small" clearable filterable style="width:160px">
+          <el-select v-model="runFilterTaskName" placeholder="任务名称" size="small" clearable filterable style="width:160px" @change="searchTaskRuns">
             <el-option v-for="opt in taskOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
           <div style="width:240px"><el-date-picker v-model="runFilterDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="small" value-format="YYYY-MM-DD" style="width:100%" /></div>
