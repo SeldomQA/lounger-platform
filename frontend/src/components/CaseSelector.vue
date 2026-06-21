@@ -71,14 +71,16 @@ const deselectAll = () => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
 .selector-toolbar {
   display: flex;
   gap: 8px;
   align-items: center;
+  width: 100%;
 }
 .selector-toolbar .el-input {
-  width: 180px;
+  flex: 1;
 }
 .selector-count {
   font-size: 13px;
