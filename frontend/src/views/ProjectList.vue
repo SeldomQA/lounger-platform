@@ -19,11 +19,7 @@
         <div class="card-meta">
           <div class="meta-item">
             <span class="meta-label">Git</span>
-            <span class="meta-value" :title="p.git_url">{{ p.git_url }}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">目录</span>
-            <span class="meta-value">{{ p.case_dir }}</span>
+            <span class="meta-value" :title="p.git_url || '未配置'">{{ p.git_url || '未配置' }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">创建</span>
@@ -34,7 +30,7 @@
           <el-button size="small" type="primary" @click="goDetail(p.id)">
             <el-icon><CaretRight /></el-icon>用例管理
           </el-button>
-          <el-button size="small" type="warning" @click="refreshProject(p.id)" :loading="refreshingId === p.id">
+          <el-button v-if="p.git_url" size="small" type="warning" @click="refreshProject(p.id)" :loading="refreshingId === p.id">
             <el-icon><Refresh /></el-icon>刷新
           </el-button>
           <el-popconfirm title="确定删除此项目？" @confirm="deleteProject(p.id)">
@@ -53,15 +49,12 @@
     </div>
 
     <el-dialog v-model="showCreateDialog" title="创建项目" width="500px">
-      <el-form :model="form" label-width="100px">
+      <el-form :model="form" label-width="80px">
         <el-form-item label="项目名称" required>
           <el-input v-model="form.name" placeholder="输入项目名称" />
         </el-form-item>
         <el-form-item label="Git 地址" required>
           <el-input v-model="form.git_url" placeholder="https://github.com/..." />
-        </el-form-item>
-        <el-form-item label="用例目录">
-          <el-input v-model="form.case_dir" placeholder="默认当前目录" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -85,7 +78,7 @@ const showCreateDialog = ref(false)
 const creating = ref(false)
 const refreshingId = ref(null)
 
-const form = ref({ name: '', git_url: '', case_dir: '.' })
+const form = ref({ name: '', git_url: '' })
 
 const statusType = (s) => ({ 0: 'info', 1: 'success', 2: 'warning' }[s] || 'info')
 const statusText = (s) => ({ 0: '待克隆', 1: '就绪', 2: '执行中' }[s] || '未知')
@@ -104,12 +97,20 @@ const loadProjects = async () => {
 }
 
 const createProject = async () => {
+  if (!form.value.name.trim()) {
+    ElMessage.warning('请输入项目名称')
+    return
+  }
+  if (!form.value.git_url.trim()) {
+    ElMessage.warning('请输入 Git 仓库地址')
+    return
+  }
   creating.value = true
   try {
-    await api.post('/projects', form.value)
+    await api.post('/projects', { name: form.value.name, git_url: form.value.git_url })
     ElMessage.success('项目创建成功')
     showCreateDialog.value = false
-    form.value = { name: '', git_url: '', case_dir: '.' }
+    form.value = { name: '', git_url: '' }
     loadProjects()
   } catch (e) {
     ElMessage.error(e.message)
@@ -147,7 +148,7 @@ onMounted(loadProjects)
 
 <style scoped>
 .project-list {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 .page-header {
@@ -163,7 +164,7 @@ onMounted(loadProjects)
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 16px;
 }
 

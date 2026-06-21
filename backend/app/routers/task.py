@@ -95,7 +95,7 @@ async def run_task(project_id: int, task_id: int, db: AsyncSession = Depends(get
 
     project = await db.get(Project, project_id)
     if not project or not project.clone_dir:
-        raise HTTPException(status_code=400, detail="Project not cloned")
+        raise HTTPException(status_code=400, detail="Project directory not found")
 
     nodeids = task.nodeids or []
     if not nodeids:
@@ -113,12 +113,18 @@ async def run_task(project_id: int, task_id: int, db: AsyncSession = Depends(get
     await db.refresh(task_run)
 
     # Start the test run
-    run_id = pytest_service.start_run(
-        project.clone_dir,
-        nodeids,
-        project_id,
-        task_run_id=task_run.id,
-    )
+    try:
+        run_id = pytest_service.start_run(
+            project.clone_dir,
+            nodeids,
+            project_id,
+            task_run_id=task_run.id,
+        )
+    except pytest_service.ProjectAlreadyRunning as e:
+        task_run.status = "error"
+        task_run.exit_code = -1
+        await db.commit()
+        raise HTTPException(status_code=409, detail=str(e))
 
     task_run.run_id = run_id
     await db.commit()

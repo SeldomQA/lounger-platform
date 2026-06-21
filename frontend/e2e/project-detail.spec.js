@@ -9,7 +9,7 @@ test.describe('用例选中与执行按钮状态', () => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify([
-            { id: 1, name: '测试项目', git_url: 'https://example.com/repo.git', case_dir: '.', status: 1, created_at: now },
+            { id: 1, name: '测试项目', git_url: 'https://example.com/repo.git', clone_dir: '', status: 1, created_at: now },
           ]),
         })
       } else {
@@ -159,7 +159,7 @@ test.describe('任务管理', () => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify([
-            { id: 1, name: '测试项目', git_url: 'https://example.com/repo.git', case_dir: '.', status: 1, created_at: now },
+            { id: 1, name: '测试项目', git_url: 'https://example.com/repo.git', clone_dir: '', status: 1, created_at: now },
           ]),
         })
       } else {

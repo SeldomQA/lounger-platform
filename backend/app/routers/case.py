@@ -129,9 +129,12 @@ async def collect_cases(project_id: int, db: AsyncSession = Depends(get_db)):
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     if not project.clone_dir:
-        raise HTTPException(status_code=400, detail="Project not cloned yet")
+        raise HTTPException(status_code=400, detail="Project directory not found")
 
-    raw_cases = pytest_service.collect_cases(project.clone_dir, project.case_dir)
+    try:
+        raw_cases = pytest_service.collect_cases(project.clone_dir)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     await db.execute(delete(TestCase).where(TestCase.project_id == project_id))
     await db.flush()
@@ -157,10 +160,13 @@ async def run_cases(project_id: int, payload: RunRequest, db: AsyncSession = Dep
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     if not project.clone_dir:
-        raise HTTPException(status_code=400, detail="Project not cloned")
+        raise HTTPException(status_code=400, detail="Project directory not found")
 
     if not payload.nodeids:
         raise HTTPException(status_code=400, detail="No test cases selected")
 
-    run_id = pytest_service.start_run(project.clone_dir, payload.nodeids, project_id)
+    try:
+        run_id = pytest_service.start_run(project.clone_dir, payload.nodeids, project_id)
+    except pytest_service.ProjectAlreadyRunning as e:
+        raise HTTPException(status_code=409, detail=str(e))
     return {"run_id": run_id, "count": len(payload.nodeids)}

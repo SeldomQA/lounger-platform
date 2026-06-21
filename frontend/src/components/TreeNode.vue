@@ -12,7 +12,7 @@
     </div>
 
     <div v-if="isCase" class="tree-row tree-case" :class="{ selected: selectedIds.includes(node.nodeid) }" :style="rowStyle" @click="emitToggle">
-      <input type="checkbox" class="tree-check" :checked="selectedIds.includes(node.nodeid)" @click.stop />
+      <input type="checkbox" class="tree-check" :checked="selectedIds.includes(node.nodeid)" @click="emitToggle" />
       <span class="tree-icon">🧪</span>
       <span class="tree-label" :title="node.description || node.name">{{ node.name }}</span>
       <el-button v-if="node.nodeid" size="small" circle type="success" class="run-btn" title="运行此用例" @click.stop="emitRun">

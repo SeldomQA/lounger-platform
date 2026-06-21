@@ -9,7 +9,7 @@
     </div>
 
     <div v-if="isCase" class="sn-row sn-case" :class="{ selected: selectedIds.includes(node.nodeid) }" :style="rowStyle" @click="emitToggle">
-      <input type="checkbox" class="sn-check" :checked="selectedIds.includes(node.nodeid)" @click.stop />
+      <input type="checkbox" class="sn-check" :checked="selectedIds.includes(node.nodeid)" @click="emitToggle" />
       <span class="sn-icon">🧪</span>
       <span class="sn-label" :title="node.description || node.name">{{ node.name }}</span>
     </div>

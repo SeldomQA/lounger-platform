@@ -10,9 +10,8 @@ class Project(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(128), nullable=False, comment="项目名称")
-    git_url = Column(String(512), nullable=False, comment="Git 仓库地址")
-    case_dir = Column(String(256), default=".", comment="用例目录(相对于项目根目录)")
-    clone_dir = Column(String(512), default="", comment="本地克隆目录")
+    git_url = Column(String(512), default="", comment="Git 仓库地址")
+    clone_dir = Column(String(512), default="", comment="本地克隆/项目目录")
     status = Column(Integer, default=0, comment="状态: 0=待克隆, 1=就绪, 2=执行中")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
