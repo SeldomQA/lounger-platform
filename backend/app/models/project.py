@@ -105,6 +105,8 @@ class ReportDetail(Base):
     failure_out = Column(Text, default="", comment="失败信息")
     error_out = Column(Text, default="", comment="错误信息")
     skipped_message = Column(Text, default="", comment="跳过原因")
+    run_log = Column(Text, default="", comment="执行日志")
+    run_date = Column(String(32), default="", comment="执行日期")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     report = relationship("TestReport", back_populates="details")

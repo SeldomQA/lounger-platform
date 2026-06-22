@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -81,6 +82,7 @@ def _parse_single_suite(testsuite) -> dict:
             error_out = ""
             skipped_message = ""
 
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         details.append({
             "class_name": class_name,
             "name": name,
@@ -91,6 +93,8 @@ def _parse_single_suite(testsuite) -> dict:
             "failure_out": failure_out,
             "error_out": error_out,
             "skipped_message": skipped_message,
+            "run_log": (system_out + "\n" + system_err).strip(),
+            "run_date": now,
         })
 
     return {

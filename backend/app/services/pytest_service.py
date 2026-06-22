@@ -419,6 +419,8 @@ def _save_report_for_run(project_id: int, report_path: str, run_id: str = "", ex
                         failure_out=detail["failure_out"],
                         error_out=detail["error_out"],
                         skipped_message=detail["skipped_message"],
+                        run_log=detail.get("run_log", ""),
+                        run_date=detail.get("run_date", ""),
                     )
                     db.add(rd)
 

@@ -14,6 +14,8 @@ class ReportDetailResponse(BaseModel):
     failure_out: str
     error_out: str
     skipped_message: str
+    run_log: str = ""
+    run_date: str = ""
 
     model_config = {"from_attributes": True}
 

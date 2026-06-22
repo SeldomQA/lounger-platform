@@ -172,25 +172,7 @@
       </div>
     </div>
 
-    <el-dialog v-model="reportDetailVisible" title="报告详情" width="900px" top="5vh">
-      <el-table :data="reportDetailCases" stripe max-height="500">
-        <el-table-column prop="class_name" label="类名" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="name" label="用例名" min-width="200" show-overflow-tooltip />
-        <el-table-column label="结果" width="80">
-          <template #default="{ row }">
-            <el-tag :type="resultType(row.result)" size="small">{{ row.result }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="run_time" label="耗时" width="70" />
-        <el-table-column label="详情" width="80">
-          <template #default="{ row }">
-            <el-button v-if="row.result !== 'passed'" size="small" link type="primary" @click="showCaseDetail(row)">
-              查看
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
+    <report-detail-dialog v-model:visible="reportDetailVisible" :report="reportDetailData" />
 
     <el-dialog v-model="caseDetailVisible" :title="caseDetail.name" width="700px">
       <div v-if="caseDetail.failure_out" class="case-err">
@@ -220,6 +202,7 @@ import { ElMessage } from 'element-plus'
 import api from '../api'
 import TreeNode from '../components/TreeNode.vue'
 import TaskManagement from './TaskManagement.vue'
+import ReportDetailDialog from '../components/ReportDetailDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -251,6 +234,7 @@ const runFilterTaskName = ref('')
 const runFilterDateRange = ref(null)
 const reportDetailVisible = ref(false)
 const reportDetailCases = ref([])
+const reportDetailData = ref(null)
 const caseDetailVisible = ref(false)
 const caseDetail = ref({})
 
@@ -379,6 +363,7 @@ const showTaskRunDetail = async (run) => {
   if (!run.report_id) return
   try {
     const { data } = await api.get(`/projects/${projectId.value}/reports/${run.report_id}`)
+    reportDetailData.value = data
     reportDetailCases.value = data.details || []
     reportDetailVisible.value = true
   } catch (e) {
