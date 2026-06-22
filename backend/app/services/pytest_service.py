@@ -5,6 +5,7 @@ import queue
 import re
 import subprocess
 import sys
+import tempfile
 import threading
 import uuid
 from datetime import datetime
@@ -26,6 +27,13 @@ _project_lock = threading.Lock()
 _SUBPROCESS_FLAGS = 0
 if sys.platform == "win32":
     _SUBPROCESS_FLAGS = subprocess.CREATE_NEW_PROCESS_GROUP
+
+
+def _tmp_dir(project_dir: str) -> Path:
+    project_path = Path(project_dir).resolve()
+    tmp = Path(tempfile.gettempdir()) / "lounger_platform" / project_path.name
+    tmp.mkdir(parents=True, exist_ok=True)
+    return tmp
 
 
 class ProjectAlreadyRunning(Exception):
@@ -101,8 +109,7 @@ def _enrich_yaml_cases(cases: list[dict], scan_dir: str) -> list[dict]:
 
 def collect_cases(project_dir: str) -> list[dict]:
     scan_dir = str(Path(project_dir).resolve())
-    tmpdir = Path(project_dir) / ".lounger_platform"
-    tmpdir.mkdir(parents=True, exist_ok=True)
+    tmpdir = _tmp_dir(project_dir)
 
     wrapper = tmpdir / "_collect_wrapper.py"
     wrapper.write_text(f"""\
@@ -232,8 +239,7 @@ def _execute_tests(run_id: str, project_dir: str, nodeids: list[str], project_id
         cwd = str(Path(project_dir).resolve())
         print(f"[pytest_service] _execute_tests: run_id={run_id}, project_dir={project_dir}", file=sys.stderr)
 
-        tmpdir = Path(cwd) / ".lounger_platform"
-        tmpdir.mkdir(parents=True, exist_ok=True)
+        tmpdir = _tmp_dir(project_dir)
         target_file = tmpdir / f"_run_{run_id}.json"
 
         target_payload = [{"nodeid": nid} for nid in nodeids]
